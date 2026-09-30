@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main # Скрипт срабатывает при пуше в ветку main
+  workflow_dispatch:
 
 jobs:
   deploy:
