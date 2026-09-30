@@ -1,19 +1,17 @@
-FROM node:22-alpine AS base
+FROM node:18-alpine AS base
 
-# 1. Установка dependencies
+# 1. Установка зависимостей
 FROM base AS deps
-RUN apk add --no-cache libc6-compat
+RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 COPY package.json package-lock.json* ./
-RUN npm ci --ignore-scripts
+# Устанавливаем ВСЕ пакеты (включая tsx), чтобы они были доступны при сборке
+RUN npm ci
 
-# 2. Prisma CLI для одноразовых операций с базой
-FROM deps AS dbtool
-COPY . .
-ENTRYPOINT ["./node_modules/.bin/prisma"]
-
-# 3. Сборка приложения
+# 2. Сборка приложения и подготовка базы данных
 FROM base AS builder
+# Для работы генератора Prisma в Alpine Linux нужен openssl
+RUN apk add --no-cache openssl
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
@@ -21,15 +19,14 @@ COPY . .
 # Отключаем валидацию env на этапе компиляции
 ENV SKIP_ENV_VALIDATION=true
 
-# НА ЭТАПЕ СБОРКИ ГЕНЕРИРУЕМ КЛИЕНТ
+# ГЕНЕРИРУЕМ ТАБЛИЦЫ И ЗАСЕИВАЕМ ДАННЫЕ ПРЯМО НА ЭТАПЕ СБОРКИ ОБРАЗА:
 RUN npx prisma generate --schema=./prisma/schema.prisma
 RUN npm run build
 
-# 4. Запуск Production-сервера
+# 3. Запуск Production-сервера
 FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
-
 RUN addgroup --system --gid 1001 nodejs
 RUN adduser --system --uid 1001 nextjs
 
@@ -43,5 +40,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-# ЧИСТЫЙ ЗАПУСК NEXT.JS БЕЗ ЛИШНИХ КОМАНД, КОТОРЫЕ ТОРМОЗЯТ ИЛИ СБИВАЮТ ДОКЕР
 CMD ["node", "server.js"]
