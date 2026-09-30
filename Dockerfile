@@ -5,7 +5,8 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json package-lock.json* ./
-RUN npm ci
+# ДОБАВЛЕН ФЛАГ --ignore-scripts, ЧТОБЫ ИЗБЕЖАТЬ ОШИБКИ НА ЭТАПЕ УСТАНОВКИ:
+RUN npm ci --ignore-scripts
 
 # 2. Сборка приложения
 FROM base AS builder
@@ -16,7 +17,7 @@ COPY . .
 # Отключаем валидацию env на этапе компиляции
 ENV SKIP_ENV_VALIDATION=true
 
-# Генерируем клиент Prisma, явно указав путь к схеме
+# Теперь явно генерируем клиент Prisma, когда файлы схемы точно скопированы:
 RUN npx prisma generate --schema=./prisma/schema.prisma
 RUN npm run build
 
