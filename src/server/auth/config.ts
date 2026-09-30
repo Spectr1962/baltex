@@ -42,7 +42,6 @@ export const authConfig = {
      * @see https://next-auth.js.org/providers/github
      */
   ],
-  adapter:   // ИСПРАВЛЕНО: Приведение к валидному типу Adapter вместо небезопасного any
   adapter: PrismaAdapter(db) as Adapter, 
   callbacks: {
     session: ({ session, user }) => ({
