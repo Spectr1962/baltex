@@ -7,7 +7,12 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci --ignore-scripts
 
-# 2. Сборка приложения
+# 2. Prisma CLI для одноразовых операций с базой
+FROM deps AS dbtool
+COPY . .
+ENTRYPOINT ["./node_modules/.bin/prisma"]
+
+# 3. Сборка приложения
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
@@ -20,7 +25,7 @@ ENV SKIP_ENV_VALIDATION=true
 RUN npx prisma generate --schema=./prisma/schema.prisma
 RUN npm run build
 
-# 3. Запуск Production-сервера
+# 4. Запуск Production-сервера
 FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
