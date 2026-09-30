@@ -1,0 +1,62 @@
+datasource db {
+  provider = "postgresql" // или "mysql" / "sqlite" в зависимости от вашего выбора
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// === МОДУЛЬ: УСЛУГИ ===
+
+// Категория услуг (например: "Кадровый учет", "Налоговый консалтинг")
+model ServiceCategory {
+  id          String    @id @default(cuid())
+  title       String    // Название категории
+  slug        String    @unique // URL-транслит (напр., "kadrovyi-uchet")
+  description String?   @db.Text
+  services    Service[] // Список конечных услуг в этой категории
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+}
+
+// Конечная услуга (например: "Расчет отпускных", "Восстановление учета")
+model Service {
+  id          String          @id @default(cuid())
+  categoryId  String
+  category    ServiceCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  title       String
+  slug        String          @unique // URL-транслит (напр., "raschet-otpusnyh")
+  description String          @db.Text
+  basePrice   String          // Стоимость (строка, чтобы писать "от 5 000 ₽")
+  features    String[]        // Список того, что входит в услугу (массив строк)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+// === МОДУЛЬ: БЛОГ ПО НИШАМ ===
+
+// Ниша клиента (например: "Маркетплейсы", "IT", "Розничная торговля")
+model Niche {
+  id          String   @id @default(cuid())
+  name        String   // Название ниши
+  slug        String   @unique // URL-транслит (напр., "marketplaces")
+  description String?  @db.Text
+  posts       Post[]   // Статьи, привязанные к этой нише
+  createdAt   DateTime @default(now())
+}
+
+// Статья в блоге
+model Post {
+  id          String   @id @default(cuid())
+  nicheId     String
+  niche       Niche    @relation(fields: [nicheId], references: [id], onDelete: Cascade)
+  title       String
+  slug        String   @unique // URL-транслит (напр., "nalogi-na-wildberries-2026")
+  excerpt     String   @db.Text // Краткое превью статьи для карточки
+  content     String   @db.Text // Полный текст статьи (Markdown или HTML)
+  published   Boolean  @default(false)
+  viewCount   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
