@@ -16,7 +16,7 @@ COPY . .
 # Отключаем валидацию env на этапе компиляции
 ENV SKIP_ENV_VALIDATION=true
 
-# Явно генерируем клиент Prisma, указывая путь к схеме в корне
+# Генерируем клиент Prisma, явно указав путь к схеме
 RUN npx prisma generate --schema=./prisma/schema.prisma
 RUN npm run build
 
