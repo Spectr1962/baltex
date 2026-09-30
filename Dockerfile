@@ -7,6 +7,11 @@ WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci --ignore-scripts
 
+# Prisma CLI для одноразовых операций с базой данных.
+FROM deps AS dbtool
+COPY . .
+ENTRYPOINT ["./node_modules/.bin/prisma"]
+
 # 2. Сборка приложения и подготовка базы данных
 FROM base AS builder
 RUN apk add --no-cache openssl
@@ -18,7 +23,7 @@ COPY . .
 ENV SKIP_ENV_VALIDATION=true
 
 # ТЕПЕРЬ ГЕНЕРИРУЕМ ТАБЛИЦЫ, ЯВНО УКАЗАВ ПУТЬ К СХЕМЕ, КОГДА ВСЕ ФАЙЛЫ УЖЕ СКОПИРОВАНЫ:
-RUN npx prisma generate --schema=./prisma/schema.prisma
+RUN ./node_modules/.bin/prisma generate --schema=./prisma/schema.prisma
 RUN npm run build
 
 # 3. Запуск Production-сервера
