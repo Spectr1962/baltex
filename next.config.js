@@ -1,10 +1,7 @@
-/**
- * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially useful
- * for Docker builds.
- */
 /** @type {import('next').NextConfig} */
 const config = {
     reactStrictMode: true,
-    output: "standalone", // ДОБАВЬТЕ ЭТУ СТРОКУ
+    output: "standalone", // Критически важно для сборки внутри Docker
 };
-module.exports = config;
+
+export default config; // ИСПОЛЬЗУЕМ СОВРЕМЕННЫЙ ЭКСПОРТ ВМЕСТО module.exports
