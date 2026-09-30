@@ -11,7 +11,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/actions/checkout@v4
+        uses: actions/checkout@v4 # ИСПРАВЛЕНО ТУТ (убрано лишнее actions/)
 
       - name: Deploy to Reg.ru VPS via SSH
         uses: appleboy/ssh-action@v1.0.3
@@ -24,4 +24,4 @@ jobs:
             cd /root/baltex/baltex-app
             git pull origin main
             docker-compose -f docker-compose.prod.yml up -d --build
-            docker image prune -f # Удаляет старые ненужные слои сборки, чтобы не забивать диск сервера
+            docker image prune -f
