@@ -1,6 +1,6 @@
 import { PrismaAdapter } from "@auth/prisma-adapter";
-import { type NextAuthOptions } from "next-auth";
-import { type Adapter } from "next-auth/adapters"; // ДОБАВЬТЕ ЭТОТ ИМПОРТ
+import { type DefaultSession, type NextAuthConfig } from "next-auth";
+import Discord from "next-auth/providers/discord";
 import { db } from "~/server/db";
 
 /**
@@ -31,7 +31,7 @@ declare module "next-auth" {
  */
 export const authConfig = {
   providers: [
-    DiscordProvider,
+    Discord,
     /**
      * ...add more providers here.
      *
@@ -42,7 +42,9 @@ export const authConfig = {
      * @see https://next-auth.js.org/providers/github
      */
   ],
-  adapter: PrismaAdapter(db) as Adapter, 
+  adapter: PrismaAdapter(
+    db as unknown as Parameters<typeof PrismaAdapter>[0],
+  ),
   callbacks: {
     session: ({ session, user }) => ({
       ...session,
