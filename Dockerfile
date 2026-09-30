@@ -1,11 +1,10 @@
-FROM node:18-alpine AS base
+FROM node:22-alpine AS base
 
 # 1. Установка зависимостей
 FROM base AS deps
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 COPY package.json package-lock.json* ./
-# ИСПРАВЛЕНО: Добавляем флаг --ignore-scripts, чтобы пропустить автоматический генератор на этапе пустых папок
 RUN npm ci --ignore-scripts
 
 # 2. Сборка приложения и подготовка базы данных
