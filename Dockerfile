@@ -1,4 +1,4 @@
-FROM node:18-alpine AS base
+FROM node:22-alpine AS base
 
 # 1. Установка зависимостей
 FROM base AS deps
@@ -6,7 +6,7 @@ RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json package-lock.json* ./
 # ДОБАВЛЕН ФЛАГ --ignore-scripts, ЧТОБЫ ИЗБЕЖАТЬ ОШИБКИ НА ЭТАПЕ УСТАНОВКИ:
-RUN npm ci --ignore-scripts
+RUN npm ci --ignore-scripts --include=optional
 
 # 2. Сборка приложения
 FROM base AS builder
@@ -16,9 +16,6 @@ COPY . .
 
 # Отключаем валидацию env на этапе компиляции
 ENV SKIP_ENV_VALIDATION=true
-
-# ДОБАВЬТЕ ЭТУ СТРОКУ ДЛЯ ПЕРЕСБОРКИ БИНАРНИКОВ ПОД АРХИТЕКТУРУ СЕРВЕРА:
-RUN npm rebuild @tailwindcss/oxide
 
 # Теперь генерируем клиент Prisma
 RUN npx prisma generate --schema=./prisma/schema.prisma
