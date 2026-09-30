@@ -3,6 +3,8 @@ import { type DefaultSession, type NextAuthConfig } from "next-auth";
 import Discord from "next-auth/providers/discord";
 import { db } from "~/server/db";
 
+// The adapter is typed against @prisma/client, while the app uses the custom generated client.
+// eslint-disable-next-line @typescript-eslint/no-unsafe-assignment -- bridge between separate generated Prisma client types
 const prismaAdapterClient =
   db as unknown as Parameters<typeof PrismaAdapter>[0];
 
