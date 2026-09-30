@@ -4,9 +4,12 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../generated/prisma"
+  provider      = "prisma-client-js"
+  output        = "../generated/prisma"
+  // ИСПРАВЛЕНО: Добавляем поддержку движков для Mac и для Linux сервера
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
+
 
 // === МОДУЛЬ: УСЛУГИ ===
 
