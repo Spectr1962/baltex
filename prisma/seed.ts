@@ -12,7 +12,7 @@ async function main() {
     console.log("🌱 Создание категорий и услуг...");
 
     // Категория 1: ООО и ИП
-    const cat1 = await prisma.serviceCategory.create({
+    await prisma.serviceCategory.create({
         data: {
             title: "Бухгалтерский аутсорсинг",
             slug: "accounting-outsourcing",
@@ -24,14 +24,14 @@ async function main() {
                         slug: "accounting-ooo",
                         description: "Комплексное обслуживание организаций на ОСНО и УСН.",
                         basePrice: "от 15 000 ₽ / мес",
-                        features: "Расчет налогов;Сдача деклараций;Кадровый учет (до 3 сотр.)",
+                        features: ["Расчет налогов", "Сдача деклараций", "Кадровый учет (до 3 сотр.)"],
                     },
                     {
                         title: "Ведение учета для ИП",
                         slug: "accounting-ip",
                         description: "Оптимальный пакет для индивидуальных предпринимателей.",
                         basePrice: "от 7 000 ₽ / мес",
-                        features: "Книга учета доходов;Расчет взносов;Квартальная отчетность",
+                        features: ["Книга учета доходов", "Расчет взносов", "Квартальная отчетность"],
                     },
                 ],
             },
@@ -39,7 +39,7 @@ async function main() {
     });
 
     // Категория 2: Налоги
-    const cat2 = await prisma.serviceCategory.create({
+    await prisma.serviceCategory.create({
         data: {
             title: "Налоговый консалтинг",
             slug: "tax-consulting",
@@ -51,7 +51,7 @@ async function main() {
                         slug: "tax-optimization",
                         description: "Законные способы снижения налогов для вашего бизнеса.",
                         basePrice: "Индивидуально",
-                        features: "Анализ рисков;Подбор патентной системы;Структурирование сделок",
+                        features: ["Анализ рисков", "Подбор патентной системы", "Структурирование сделок"],
                     },
                 ],
             },
