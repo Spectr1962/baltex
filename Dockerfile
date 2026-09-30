@@ -1,24 +1,26 @@
 FROM node:18-alpine AS base
 
-# Шаг 1: Установка зависимостей
+# 1. Установка зависимостей
 FROM base AS deps
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
 COPY package.json package-lock.json* ./
 RUN npm ci
 
-# Шаг 2: Сборка приложения
+# 2. Сборка приложения
 FROM base AS builder
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 
-# Пропускаем валидацию env при сборке, так как они подставятся на сервере
+# Отключаем валидацию env на этапе компиляции
 ENV SKIP_ENV_VALIDATION=true
-RUN npx prisma generate
+
+# Явно генерируем клиент Prisma, указывая путь к схеме в корне
+RUN npx prisma generate --schema=./prisma/schema.prisma
 RUN npm run build
 
-# Шаг 3: Запуск
+# 3. Запуск Production-сервера
 FROM base AS runner
 WORKDIR /app
 ENV NODE_ENV=production
