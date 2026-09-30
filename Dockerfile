@@ -17,9 +17,13 @@ COPY . .
 # Отключаем валидацию env на этапе компиляции
 ENV SKIP_ENV_VALIDATION=true
 
-# Теперь явно генерируем клиент Prisma, когда файлы схемы точно скопированы:
+# ДОБАВЬТЕ ЭТУ СТРОКУ ДЛЯ ПЕРЕСБОРКИ БИНАРНИКОВ ПОД АРХИТЕКТУРУ СЕРВЕРА:
+RUN npm rebuild @tailwindcss/oxide
+
+# Теперь генерируем клиент Prisma
 RUN npx prisma generate --schema=./prisma/schema.prisma
 RUN npm run build
+
 
 # 3. Запуск Production-сервера
 FROM base AS runner
