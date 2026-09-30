@@ -5,12 +5,11 @@ FROM base AS deps
 RUN apk add --no-cache libc6-compat openssl
 WORKDIR /app
 COPY package.json package-lock.json* ./
-# Устанавливаем ВСЕ пакеты (включая tsx), чтобы они были доступны при сборке
-RUN npm ci
+# ИСПРАВЛЕНО: Добавляем флаг --ignore-scripts, чтобы пропустить автоматический генератор на этапе пустых папок
+RUN npm ci --ignore-scripts
 
 # 2. Сборка приложения и подготовка базы данных
 FROM base AS builder
-# Для работы генератора Prisma в Alpine Linux нужен openssl
 RUN apk add --no-cache openssl
 WORKDIR /app
 COPY --from=deps /app/node_modules ./node_modules
@@ -19,7 +18,7 @@ COPY . .
 # Отключаем валидацию env на этапе компиляции
 ENV SKIP_ENV_VALIDATION=true
 
-# ГЕНЕРИРУЕМ ТАБЛИЦЫ И ЗАСЕИВАЕМ ДАННЫЕ ПРЯМО НА ЭТАПЕ СБОРКИ ОБРАЗА:
+# ТЕПЕРЬ ГЕНЕРИРУЕМ ТАБЛИЦЫ, ЯВНО УКАЗАВ ПУТЬ К СХЕМЕ, КОГДА ВСЕ ФАЙЛЫ УЖЕ СКОПИРОВАНЫ:
 RUN npx prisma generate --schema=./prisma/schema.prisma
 RUN npm run build
 
