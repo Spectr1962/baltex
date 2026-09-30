@@ -1,0 +1,33 @@
+version: "3.8"
+
+services:
+  # Наше Next.js PWA Приложение
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: baltex-web
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:PRODUCTION_PASSWORD_HERE@postgres:5432/baltex-app?schema=public
+      - NEXTAUTH_SECRET=SUPER_SECRET_STRING_HERE
+      - NEXTAUTH_URL=https://ваш-домен.ру
+    depends_on:
+      - postgres
+
+  # База данных PostgreSQL
+  postgres:
+    image: postgres:15-alpine
+    container_name: baltex-postgres-prod
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: PRODUCTION_PASSWORD_HERE
+      POSTGRES_DB: baltex-app
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: always
+
+volumes:
+  pgdata:
