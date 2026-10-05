@@ -6,7 +6,7 @@ services:
     container_name: baltex-postgres
     environment:
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: mysecurepassword
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
       POSTGRES_DB: baltex-app
     ports:
       - "5432:5432" # Если порт 5432 занят, измените левую цифру на "5433:5432"
