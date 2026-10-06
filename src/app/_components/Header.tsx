@@ -11,7 +11,7 @@ export function Header() {
         { label: "Главная", href: "/" },
         { label: "Услуги", href: "/services" },
         { label: "Блог", href: "/blog" },
-        { label: "С кем работаем", href: "/#clients" },
+        { label: "С кем работаем", href: "#clients" },
         { label: "Цены", href: "/prices" },
         { label: "Контакты", href: "/contacts" },
     ];
