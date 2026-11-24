@@ -1,102 +1,98 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 
-export function Header() {
-    // Состояние для открытия/закрытия мобильного меню
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+const menuItems = [
+    { label: "Главная", href: "/" },
+    { label: "Услуги", href: "/services" },
+    { label: "Блог", href: "/blog" },
+    { label: "Цены", href: "/prices" },
+    { label: "Контакты", href: "/contacts" },
+];
 
-    const menuItems = [
-        { label: "Главная", href: "/" },
-        { label: "Услуги", href: "/services" },
-        { label: "Блог", href: "/blog" },
-        { label: "С кем работаем", href: "#clients" },
-        { label: "Цены", href: "/prices" },
-        { label: "Контакты", href: "/contacts" },
-    ];
+export default function Header() {
+    const [isOpen, setIsOpen] = useState(false);
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-white/5 bg-black/80 text-white antialiased backdrop-blur-md">
-            <div className="mx-auto flex h-20 max-w-[1200px] items-center justify-between px-4 sm:px-6">
-                {/* Логотип */}
-                <Link
-                    href="/"
-                    className="text-xl font-black tracking-tighter text-white no-underline transition-colors hover:text-white/80"
-                >
-                    BALTEX<span className="text-[#0070f3]">.</span>
-                </Link>
+        <header className="fixed top-0 left-0 right-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
+            <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div className="flex h-16 items-center justify-between gap-4">
 
-                {/* ДЕСКТОПНОЕ МЕНЮ (Отображается на компьютерах, скрывается на мобильных) */}
-                <nav className="hidden items-center gap-8 md:flex">
-                    {menuItems.map((item, idx) => (
-                        <Link
-                            key={idx}
-                            href={item.href}
-                            className="text-sm font-medium text-white/60 no-underline transition-colors duration-200 hover:text-white"
-                        >
-                            {item.label}
-                        </Link>
-                    ))}
-                </nav>
-
-                {/* Кнопка действия для ПК */}
-                <div className="hidden md:block">
-                    <Link
-                        href="/contacts"
-                        className="rounded-full bg-white px-5 py-2.5 text-xs font-bold text-black no-underline transition-all duration-200 hover:bg-white/90"
-                    >
-                        Обсудить проект
+                    {/* ЛОГОТИП */}
+                    <Link href="/" className="flex items-center gap-2 no-underline group">
+                        <span className="text-xl font-black text-primary tracking-wider transition group-hover:opacity-80">
+                            BALTEX
+                        </span>
+                        <span className="hidden text-xs text-muted-foreground sm:inline-block border-l border-border pl-2">
+                            Аутсорсинг & Безопасность
+                        </span>
                     </Link>
-                </div>
 
-                {/* КНОПКА-ГАМБУРГЕР ДЛЯ МОБИЛЬНЫХ (Отображается только на смартфонах) */}
-                <button
-                    type="button"
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    className="z-50 flex h-8 w-8 flex-col items-center justify-center gap-1.5 focus:outline-none md:hidden"
-                    aria-label="Переключить меню"
-                    aria-expanded={isMobileMenuOpen}
-                    aria-controls="mobile-navigation"
-                >
-                    <span
-                        className={`h-0.5 w-6 origin-center bg-white transition-all duration-300 ${isMobileMenuOpen ? "translate-y-2 rotate-45 bg-[#0070f3]" : ""}`}
-                    />
-                    <span
-                        className={`h-0.5 w-6 bg-white transition-all duration-300 ${isMobileMenuOpen ? "opacity-0" : ""}`}
-                    />
-                    <span
-                        className={`h-0.5 w-6 origin-center bg-white transition-all duration-300 ${isMobileMenuOpen ? "-translate-y-2 -rotate-45 bg-[#0070f3]" : ""}`}
-                    />
-                </button>
-            </div>
-
-            {isMobileMenuOpen && (
-                <div
-                    id="mobile-navigation"
-                    className="fixed inset-0 z-40 h-screen w-full bg-black p-6 md:hidden"
-                >
-                    <nav
-                        aria-label="Мобильная навигация"
-                        className="flex flex-col gap-6 p-6"
-                    >
+                    {/* ДЕСКТОПНОЕ МЕНЮ (Компьютеры) */}
+                    <nav className="hidden items-center gap-6 md:flex">
                         {menuItems.map((item, idx) => (
                             <Link
                                 key={idx}
                                 href={item.href}
-                                onClick={() => setIsMobileMenuOpen(false)}
-                                className="border-b border-white/5 pb-3 text-xl font-bold text-white/80 no-underline transition-colors hover:text-[#0070f3]"
+                                prefetch={false} // Защита для стабильности в Safari
+                                className="text-sm font-medium text-foreground/70 no-underline transition-colors duration-200 hover:text-primary"
                             >
                                 {item.label}
                             </Link>
                         ))}
-                        <Link
-                            href="/contacts"
-                            onClick={() => setIsMobileMenuOpen(false)}
-                            className="mt-4 block w-full rounded-xl bg-[#0070f3] py-4 text-center text-sm font-bold text-white no-underline shadow-lg shadow-[#0070f3]/20 transition-all duration-200 hover:bg-[#0070f3]/90"
-                        >
+                    </nav>
+
+                    {/* ПРАВАЯ ЧАСТЬ: Кнопка действия + Мобильный гамбургер */}
+                    <div className="flex items-center gap-4">
+                        {/* Кнопка "Обсудить проект" (Заглушка под shadcn/ui) */}
+                        <button className="hidden rounded-full bg-primary px-4 py-2 text-xs font-semibold text-primary-foreground no-underline shadow-sm transition hover:bg-primary/90 md:block">
                             Обсудить проект
-                        </Link>
+                        </button>
+
+                        {/* Кнопка Мобильного Меню (Гамбургер) */}
+                        <button
+                            onClick={() => setIsOpen(!isOpen)}
+                            className="flex h-9 w-9 items-center justify-center rounded-lg border border-border text-foreground md:hidden hover:bg-muted transition"
+                            aria-label="Toggle menu"
+                        >
+                            <svg
+                                xmlns="http://w3.org"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                strokeWidth={2}
+                                stroke="currentColor"
+                                className="h-5 w-5"
+                            >
+                                {isOpen ? (
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                                ) : (
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M4 6h16M4 12h16M4 18h16" />
+                                )}
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* МОБИЛЬНОЕ МЕНЮ (Выпадает на смартфонах при клике) */}
+            {isOpen && (
+                <div className="border-b border-border bg-background px-4 pt-2 pb-4 shadow-lg md:hidden animate-fade-in">
+                    <nav className="flex flex-col gap-2">
+                        {menuItems.map((item, idx) => (
+                            <Link
+                                key={idx}
+                                href={item.href}
+                                prefetch={false}
+                                onClick={() => setIsOpen(false)} // Закрывает меню при переходе
+                                className="rounded-lg px-3 py-2 text-base font-medium text-foreground/80 no-underline hover:bg-muted hover:text-primary transition"
+                            >
+                                {item.label}
+                            </Link>
+                        ))}
+                        <button className="mt-2 w-full rounded-lg bg-primary py-2.5 text-sm font-semibold text-primary-foreground shadow-sm hover:bg-primary/90 transition">
+                            Обсудить проект
+                        </button>
                     </nav>
                 </div>
             )}
